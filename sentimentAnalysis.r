@@ -23,17 +23,17 @@ library(RColorBrewer)
 library(RTextTools)
 library(plotrix)
 
-#-------------------------------AUTENTICACI覰 DE TWITTER-------------------------------#
-#Realizar autenticaci髇 con Twitter
-api_key = "Y5fbQA5lJodmk0E4q4c1DYbXD"
-api_secret = "f4OQTcDmCg56EiHEaSZ7Zo3POHrEn2T0QHj0KbqBmZyRWmNkVL"
-access_token = "919998032938012672-6GP05oGCs1SZ6cwP9QwXw8VWulKDXDe"
-access_token_secret = "YWOmWI4B3UTzOeYMVyipwVtiQvzIqygfO2cN2ySd1RZk4"
+#-------------------------------AUTENTICACI脫N DE TWITTER-------------------------------#
+#Realizar autenticaci贸n con Twitter
+api_key = "your api key"
+api_secret = "your api secret"
+access_token = "your access token"
+access_token_secret = "your access token secret"
 request_url = 'https://api.twitter.com/oauth/request_token'
 access_url = 'https://api.twitter.com/oauth/access_token'
 auth_url = 'https://api.twitter.com/oauth/authorize'
 
-#Realizar autenticaci髇 de la app
+#Realizar autenticaci贸n de la app
 setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 #Obtener credencial
@@ -46,7 +46,7 @@ credential = OAuthFactory$new(consumerKey = api_key,
 #Autorizar credencial de la app
 credential$handshake(cainfo = system.file("CurlSSL", "cacert.pem", package ="RCurl")) 
 
-#--------------------------------EXTRACCI覰 DE TWEETS--------------------------------#
+#--------------------------------EXTRACCI脫N DE TWEETS--------------------------------#
 #Buscar y extraer tweets
 iphoneTweets = searchTwitter("iPhone X", n=5000, lang="en", since = "2017-06-01")
 noteTweets = searchTwitter("Galaxy Note 8", n=5000, lang="en", since = "2017-06-01")
@@ -66,7 +66,7 @@ noteTweets.text = noteTweets.df$text
 pixelTweets.text = pixelTweets.df$text
 
 #---------------------------------LIMPIEZA DE TWEETS---------------------------------#
-#Crear funci髇 para depurar los tweets
+#Crear funci贸n para depurar los tweets
 tweets.clean = function(tweetsList){
   cleanedTweets = sapply(tweetsList,function(row) iconv(row, "latin1", "ASCII", sub=""))
     
@@ -88,19 +88,19 @@ tweets.clean = function(tweetsList){
   #Eliminar usuarios (@usuarioX)
   tweetsCorpus = tm_map(tweetsCorpus, function(tweet) gsub("@[^[:space:]]*", "", tweet))
 
-  #Elimina signos de puntuaci髇
+  #Elimina signos de puntuaci贸n
   tweetsCorpus = tm_map(tweetsCorpus, removePunctuation)
 
-  #Transformar todo a min鷖culas
+  #Transformar todo a min煤sculas
   tweetsCorpus = tm_map(tweetsCorpus, content_transformer(tolower))
 
-  #Eliminar palabras innecesarias, saltos de l韓ea y rt's.
+  #Eliminar palabras innecesarias, saltos de l铆nea y rt's.
   tweetsCorpus = tm_map(tweetsCorpus, removeWords, c(stopwords("english"),"\n","rt")) 
 
-  #Eliminar n鷐eros
+  #Eliminar n煤meros
   tweetsCorpus = tm_map(tweetsCorpus, removeNumbers) 
 
-  #Eliminar la(s) palabra(s) buscada(s) o fuertemente relacionadas con la b鷖queda
+  #Eliminar la(s) palabra(s) buscada(s) o fuertemente relacionadas con la b煤squeda
   searchedWords = c("iphone x","iphonex","iphone","apple","ios","galaxy","galaxynote",
                        "note","note 8","samsung","android","google","pixel","pixel 2",
                        "pixel2","phone","smartphone","cellphone","giveaway","international","tweet")
@@ -119,14 +119,14 @@ noteCleanedTweets = tweets.clean(noteTweets.text)
 pixelCleanedTweets = tweets.clean(pixelTweets.text)
 
 #----------------------ADJUNTAR CONJUNTO DE DATOS DE PALABRAS----------------------#
-#Almacenar en posWords la lista de palabras positivas ignorando la secci髇 comentada
+#Almacenar en posWords la lista de palabras positivas ignorando la secci贸n comentada
 posWords = scan('./posWords.txt', what='character', comment.char = ';')
 
-#Almacenar en negWords la lista de palabras negativas ignorando la secci髇 comentada
+#Almacenar en negWords la lista de palabras negativas ignorando la secci贸n comentada
 negWords = scan('./negWords.txt', what='character', comment.char = ';')
 
 #------------FUNCIONES DE PUNTUACION POR PALABRAS POSITIVAS Y NEGATIVAS------------#
-#Crear funci髇 para obtener puntuaciones
+#Crear funci贸n para obtener puntuaciones
 getScores = function(tweets, pos.words, neg.words){
   results.df = data.frame(matrix(nrow=0,ncol=5))
   
@@ -226,7 +226,7 @@ bayesianEmotions = function(tweets,prior=1.0){
           score = 1.0
           score = abs(log(score*prior/count))
           
-          #Se asigna su puntuaci髇 en la categor韆 de emociones correspondiente
+          #Se asigna su puntuaci贸n en la categor铆a de emociones correspondiente
           scores[[category]] = scores[[category]]+score
         }
       }
@@ -249,7 +249,7 @@ bayesianEmotions = function(tweets,prior=1.0){
       best_fit = NA
     }
     
-    #Se anexan las puntuaciones y la clasificaci髇 al vector vacio 
+    #Se anexan las puntuaciones y la clasificaci贸n al vector vacio 
     documents = rbind(documents,c(scores$anger,scores$disgust,scores$fear,scores$joy,scores$sadness,scores$surprise,best_fit))
   }
   
@@ -270,7 +270,7 @@ bayesianPolarity = function(tweets,pStrong=0.5,pWeak=1.0,prior=1.0){
   #Se crea un vector vacio
   documents = c()
   
-  #Se realiza una iteraci髇 por tweet
+  #Se realiza una iteraci贸n por tweet
   for(i in 1:nrow(matrix)){
     scores = list(positive=0,negative=0)
     doc = matrix[i,]
@@ -287,7 +287,7 @@ bayesianPolarity = function(tweets,pStrong=0.5,pWeak=1.0,prior=1.0){
         score = pWeak
         score = abs(log(score*prior/count))
       
-        #Se asigna su puntuaci髇 en la categor韆 (positivo o negativo) correspondiente
+        #Se asigna su puntuaci贸n en la categor铆a (positivo o negativo) correspondiente
         scores[[category]] = scores[[category]]+score
       }
     }
@@ -312,7 +312,7 @@ bayesianPolarity = function(tweets,pStrong=0.5,pWeak=1.0,prior=1.0){
       }
     }
     
-    #Se anexan las puntuaciones y la clasificaci髇 al vector vacio
+    #Se anexan las puntuaciones y la clasificaci贸n al vector vacio
     documents = rbind(documents,c(scores$positive,scores$negative,abs(scores$positive/scores$negative),best_fit))
   }
   
@@ -337,17 +337,17 @@ iphoneEmotions[is.na(iphoneEmotions)] = 'unknown'
 noteEmotions[is.na(noteEmotions)] = 'unknown'
 pixelEmotions[is.na(pixelEmotions)] = 'unknown'
 
-#Obtener la clasificaci髇 de los tweets por polaridad
+#Obtener la clasificaci贸n de los tweets por polaridad
 iphonePolarity.class = bayesianPolarity(iphone.scores$tweet)
 notePolarity.class = bayesianPolarity(note.scores$tweet)
 pixelPolarity.class = bayesianPolarity(pixel.scores$tweet)
 
-#Se obtiene la lista de la clasificaci髇 de polaridad
+#Se obtiene la lista de la clasificaci贸n de polaridad
 iphonePolarity = iphonePolarity.class[,4]
 notePolarity = notePolarity.class[,4]
 pixelPolarity = pixelPolarity.class[,4]
 
-#Se crea un dataframe con las estad韘ticas de los tweets
+#Se crea un dataframe con las estad铆sticas de los tweets
 iphonePolarity = data.frame(text=iphone.scores$tweet, emotion=iphoneEmotions, polarity=iphonePolarity, stringAsFactors=FALSE)
 notePolarity = data.frame(text=note.scores$tweet, emotion=noteEmotions, polarity=notePolarity, stringAsFactors=FALSE)
 pixelPolarity = data.frame(text=pixel.scores$tweet, emotion=pixelEmotions, polarity=pixelPolarity, stringAsFactors=FALSE)
@@ -355,7 +355,7 @@ pixelPolarity = data.frame(text=pixel.scores$tweet, emotion=pixelEmotions, polar
 #-----------------------------GRAFICACION DE RESULTADOS----------------------------#
           #--------------Subjetividad por dispositivo-------------#
 
-#Se obtiene la cantidad de tweets pertenecientes a cada categor韆 por dispositivo
+#Se obtiene la cantidad de tweets pertenecientes a cada categor铆a por dispositivo
 iphone.sub = data.frame(Pos = length(which(iphonePolarity.class=="positive")), Neg = length(which(iphonePolarity.class=="negative")), Neutral = length(which(iphonePolarity.class=="neutral")))
 note.sub = data.frame(Pos = length(which(notePolarity.class=="positive")), Neg = length(which(notePolarity.class=="negative")), Neutral = length(which(notePolarity.class=="neutral")))
 pixel.sub = data.frame(Pos = length(which(pixelPolarity.class=="positive")), Neg = length(which(pixelPolarity.class=="negative")), Neutral = length(which(pixelPolarity.class=="neutral")))
@@ -375,18 +375,18 @@ text(c(0.5,1.6,2.7),c(pixel.sub$Pos/2,pixel.sub$Neg/2,pixel.sub$Neutral/2),c(pix
 title(main = 'Tweets Categorizados por Subjetividad por Dispositivo', outer = TRUE, line = -2)
 
           #--------Subjetividad por todos los dispositivos--------#
-#Se calcula la suma de la cantidad de tweets pertenecientes a cada categor韆
+#Se calcula la suma de la cantidad de tweets pertenecientes a cada categor铆a
 mixed.sub = data.frame(Pos = length(which(iphonePolarity.class=="positive")) + length(which(notePolarity.class=="positive")) + length(which(pixelPolarity.class=="positive")), 
                         Neg = length(which(iphonePolarity.class=="negative")) + length(which(notePolarity.class=="negative")) + length(which(pixelPolarity.class=="negative")),
                         Neutral = length(which(iphonePolarity.class=="neutral")) + length(which(notePolarity.class=="neutral")) + length(which(pixelPolarity.class=="neutral")))
 
 #Se grafica la figura
-barplot(as.numeric(c(mixed.sub$Pos,mixed.sub$Neg,mixed.sub$Neutral)), names.arg = names(mixed.sub), space=c(0.1,1), cex.names = 0.7, xlab="Categor韆", ylab="# de Tweets", las = 1, col = brewer.pal(3,'Dark2'))
+barplot(as.numeric(c(mixed.sub$Pos,mixed.sub$Neg,mixed.sub$Neutral)), names.arg = names(mixed.sub), space=c(0.1,1), cex.names = 0.7, xlab="Categor铆a", ylab="# de Tweets", las = 1, col = brewer.pal(3,'Dark2'))
 text(c(1.5,2.6,3.7),c(mixed.sub$Pos/2,mixed.sub$Neg/2,mixed.sub$Neutral/2),c(mixed.sub$Pos,mixed.sub$Neg,mixed.sub$Neutral),cex = 1)
 title(main = 'Tweets Categorizados por Subjetividad de Todos los Dispositivos', outer = TRUE, line = -2)
 
           #---------------Emociones por dispositivo---------------#
-#Se obtiene la cantidad de tweets pertenecientes a cada categor韆 para el iPhone X
+#Se obtiene la cantidad de tweets pertenecientes a cada categor铆a para el iPhone X
 iphoneAnger = sum(length(which(iphoneEmotions == "anger")))
 iphoneDisgust = sum(length(which(iphoneEmotions == "disgust")))
 iphoneFear = sum(length(which(iphoneEmotions == "fear")))
@@ -399,10 +399,10 @@ total = sum(iphoneAnger,iphoneDisgust,iphoneFear,iphoneJoy,iphoneSadness,iphoneS
 percentages = c(paste(round(iphoneAnger/total*100,2),"%"),paste(round(iphoneDisgust/total*100,2),"%"),paste(round(iphoneFear/total*100,2),"%"),paste(round(iphoneJoy/total*100,2),"%"),paste(round(iphoneSadness/total*100,2),"%"),paste(round(iphoneSurprise/total*100,2),"%"))
 
 #Se grafica la figura
-pie3D(x=emotionsIphone,labels = percentages, col = brewer.pal(6,'Set1'),main="Distribuci髇 de Emociones en el iPhone X (%)", labelcex = 1.1)
+pie3D(x=emotionsIphone,labels = percentages, col = brewer.pal(6,'Set1'),main="Distribuci贸n de Emociones en el iPhone X (%)", labelcex = 1.1)
 legend("bottomleft", legend = emotions, fill = brewer.pal(6,'Set1'), cex = 0.8)
 
-#Se obtiene la cantidad de tweets pertenecientes a cada categor韆 para el Note 8
+#Se obtiene la cantidad de tweets pertenecientes a cada categor铆a para el Note 8
 noteAnger = sum(length(which(noteEmotions == "anger")))
 noteDisgust = sum(length(which(noteEmotions == "disgust")))
 noteFear = sum(length(which(noteEmotions == "fear")))
@@ -415,10 +415,10 @@ total = sum(noteAnger,noteDisgust,noteFear,noteJoy,noteSadness,noteSurprise)
 percentages = c(paste(round(noteAnger/total*100,2),"%"),paste(round(noteDisgust/total*100,2),"%"),paste(round(noteFear/total*100,2),"%"),paste(round(noteJoy/total*100,2),"%"),paste(round(noteSadness/total*100,2),"%"),paste(round(noteSurprise/total*100,2),"%"))
 
 #Se grafica la figura
-pie3D(emotionsNote, labels = percentages, col = brewer.pal(6,'Set1'),main = "Distribuci髇 de Emociones en el Note 8 (%)", labelcex = 1.1) 
+pie3D(emotionsNote, labels = percentages, col = brewer.pal(6,'Set1'),main = "Distribuci贸n de Emociones en el Note 8 (%)", labelcex = 1.1) 
 legend("bottomleft", legend = emotions, fill = brewer.pal(6,'Set1'), cex = .8)
 
-#Se obtiene la cantidad de tweets pertenecientes a cada categor韆 para el Pixel 2
+#Se obtiene la cantidad de tweets pertenecientes a cada categor铆a para el Pixel 2
 pixelAnger = sum(length(which(pixelEmotions == "anger")))
 pixelDisgust = sum(length(which(pixelEmotions == "disgust")))
 pixelFear = sum(length(which(pixelEmotions == "fear")))
@@ -431,11 +431,11 @@ total = sum(pixelAnger,pixelDisgust,pixelFear,pixelJoy,pixelSadness,pixelSurpris
 percentages = c(paste(round(pixelAnger/total*100,2),"%"),paste(round(pixelDisgust/total*100,2),"%"),paste(round(pixelFear/total*100,2),"%"),paste(round(pixelJoy/total*100,2),"%"),paste(round(pixelSadness/total*100,2),"%"),paste(round(pixelSurprise/total*100,2),"%"))
 
 #Se grafica la figura
-pie3D(emotionsPixel, labels = percentages, col = brewer.pal(6,'Set1'), main = "Distribuci髇 de Emociones en el Pixel 2 (%)", labelcex = 1.1) 
+pie3D(emotionsPixel, labels = percentages, col = brewer.pal(6,'Set1'), main = "Distribuci贸n de Emociones en el Pixel 2 (%)", labelcex = 1.1) 
 legend("bottomleft", legend = emotions, fill = brewer.pal(6,'Set1'), cex = .8)
 
           #---------Emociones por todos los dispositivos----------#
-#Se calcula la suma de la cantidad de tweets pertenecientes a cada categor韆
+#Se calcula la suma de la cantidad de tweets pertenecientes a cada categor铆a
 mixPos = sum(length(which(iphonePolarity.class =="positive")),length(which(notePolarity.class =="positive")),length(which(notePolarity.class =="positive")))
 mixNeg = sum(length(which(iphonePolarity.class =="negative")),length(which(notePolarity.class =="negative")),length(which(notePolarity.class =="negative")))
 mixNeutral = sum(length(which(iphonePolarity.class =="neutral")),length(which(notePolarity.class =="neutral")),length(which(notePolarity.class =="neutral")))
@@ -445,7 +445,7 @@ total = sum(devices)
 percentages = c(paste(round(mixPos*100/total,2),"%"), paste(round(mixNeg*100/total,2),"%"),paste(round(mixNeutral*100/total,2),"%"))
 
 #Se grafica la figura
-pie3D(devices, labels = percentages, col = brewer.pal(3,'Dark2'), main = "Distribuci髇 de Emociones en Todos los Dispositivos (%)", labelcex = 1.1)
+pie3D(devices, labels = percentages, col = brewer.pal(3,'Dark2'), main = "Distribuci贸n de Emociones en Todos los Dispositivos (%)", labelcex = 1.1)
 legend("bottomleft",legend = c("Positive","Negative","Neutral"), fill = brewer.pal(3,'Dark2'), cex = .8)
 
           #---Puntuaciones de tweets por todos los dispositivos---#
@@ -465,7 +465,7 @@ iphoneAccum = getAccumulated(iphone.scores$score)
 noteAccum = getAccumulated(note.scores$score)
 pixelAccum = getAccumulated(pixel.scores$score)
 
-plot(iphoneAccum,type = "l", ylim = c(min(iphoneAccum,noteAccum,pixelAccum),max(iphoneAccum,noteAccum,pixelAccum)) ,col = brewer.pal(8,'Set1')[3], xlab = "# de Tweets", ylab = "Puntuaci髇 Acumulada", main = "Puntuaci髇 Hist髍ica Acumulada por Dispositivo")
+plot(iphoneAccum,type = "l", ylim = c(min(iphoneAccum,noteAccum,pixelAccum),max(iphoneAccum,noteAccum,pixelAccum)) ,col = brewer.pal(8,'Set1')[3], xlab = "# de Tweets", ylab = "Puntuaci贸n Acumulada", main = "Puntuaci贸n Hist贸rica Acumulada por Dispositivo")
 lines(noteAccum, type = "l", col = brewer.pal(8,'Set1')[4])
 lines(pixelAccum, type = "l", col = brewer.pal(8,'Set1')[1])
 legend(0,2900,c("iPhone X","Note 8","Pixel 2"),lty=c(1), lwd=c(2.5),col = c(brewer.pal(8,'Set1')[3],brewer.pal(8,'Set1')[4],brewer.pal(8,'Set1')[1]))
@@ -530,4 +530,4 @@ df = data.frame(term = names(mostFreq), freq=mostFreq)
 par(mai=c(1,1.5,1,1))
 barplot(mostFreq, xlim=c(0,round(max(mostFreq)/100,0)*100), col = c(brewer.pal(name = 'Dark2',n = 8),brewer.pal(name = 'Paired',n = 12)), horiz = TRUE, las=1, cex.names = 0.5, space = c(0.5,0))
 par(mar = c(5,7,4,2) + 0.1)
-title(main = "Palabras M醩 Frecuentes por Todos los Dispositivos", ylab = "Palabras", xlab = "Frecuencia")
+title(main = "Palabras M谩s Frecuentes por Todos los Dispositivos", ylab = "Palabras", xlab = "Frecuencia")
